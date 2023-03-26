@@ -1,9 +1,25 @@
+using BusinessLogic.CapacityPlanningService;
+using DataAcess;
+using DataAcess.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddCors();
+
+//DataAcess
+builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"))
+                .AddSingleton<IMongoDBService, MongoDBService>()
+                .AddSingleton<ICapacityPlanningRepository, CapacityPlanningRepository>()
+                .AddSingleton<IFactoryModelRepository, FactoryModelRepository>();
+
+//BusinessLogic
+builder.Services.AddSingleton<ICapacityPlanningQuery, CapacityPlanningQuery>();
+
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -15,8 +31,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
