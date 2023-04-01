@@ -8,6 +8,8 @@ namespace DataAcess.Repositories
     {
         public Task CreateBillOfMaterials(BillOfMaterialsEntity billOfMaterialsEntity);
         public Task CreateFactoryModel(FactoryModelEntity factoryModelEntity);
+        public Task<BillOfMaterialsEntity> GetBillOfMaterial(int billOfMaterialId);
+        public Task<List<FactoryModelEntity>> GetFactoryModels();
     }
     public class FactoryModelRepository: IFactoryModelRepository
     {
@@ -21,6 +23,12 @@ namespace DataAcess.Repositories
         public async Task CreateBillOfMaterials(BillOfMaterialsEntity billOfMaterialsEntity)
         {
             await _mongoDBService.BillOfMaterialsCollection.InsertOneAsync(billOfMaterialsEntity);
+        }
+
+        public async Task<BillOfMaterialsEntity> GetBillOfMaterial(int billOfMaterialId)
+        {
+            var billOfMaterials = await _mongoDBService.BillOfMaterialsCollection.Find(new BsonDocument()).ToListAsync();
+            return billOfMaterials.First(x => x.Id == billOfMaterialId);
         }
 
         public async Task CreateFactoryModel(FactoryModelEntity factoryModelEntity)

@@ -1,23 +1,34 @@
 using BusinessLogic.CapacityPlanningService;
+using BusinessLogic.FactoryModelsService;
+using BusinessLogic.MRPService;
 using DataAcess;
 using DataAcess.Repositories;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+                //.AddJsonOptions(options =>
+                //{
+                //    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                //});
 builder.Services.AddCors();
 
 //DataAcess
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"))
                 .AddSingleton<IMongoDBService, MongoDBService>()
                 .AddSingleton<ICapacityPlanningRepository, CapacityPlanningRepository>()
-                .AddSingleton<IFactoryModelRepository, FactoryModelRepository>();
+                .AddSingleton<IFactoryModelRepository, FactoryModelRepository>()
+                .AddSingleton<IWarehouseRepository, WarehouseRepository>()
+                .AddSingleton<IMRPRepository, MRPRepository>();
 
 //BusinessLogic
-builder.Services.AddSingleton<ICapacityPlanningQuery, CapacityPlanningQuery>();
-
+builder.Services.AddSingleton<ICapacityPlanningQuery, CapacityPlanningQuery>()
+                .AddSingleton<IFactoryModelQuery, FactoryModelQuery>()
+                .AddSingleton<IProductionCapacityCalculator, ProductionCapacityCalculator>()
+                .AddSingleton<IProductionShedule, ProductionShedule>();
 
 
 builder.Services.AddEndpointsApiExplorer();

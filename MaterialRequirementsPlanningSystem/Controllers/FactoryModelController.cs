@@ -1,4 +1,6 @@
-﻿using DataAcess.Entities;
+﻿using BusinessLogic.FactoryModelsService;
+using BusinessLogic.Models;
+using DataAcess.Entities;
 using DataAcess.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +9,11 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
     public class FactoryModelController : ControllerBase
     {
         private readonly IFactoryModelRepository _factoryModelRepository;
-        public FactoryModelController(IFactoryModelRepository factoryModelRepository) 
+        private readonly IFactoryModelQuery _factoryModelQuery;
+        public FactoryModelController(IFactoryModelRepository factoryModelRepository, IFactoryModelQuery factoryModelQuery) 
         {
             _factoryModelRepository= factoryModelRepository;
+            _factoryModelQuery= factoryModelQuery;
         }
 
         [HttpPost]
@@ -28,9 +32,9 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
 
         [HttpGet]
         [Route("/api/factory-model")]
-        public async Task GetFactoryModels([FromBody] FactoryModelEntity request)
+        public async Task<FactoryModelsResponseModel> GetFactoryModels()
         {
-            await _factoryModelRepository.CreateFactoryModel(request);
+            return await _factoryModelQuery.GetFactoryModelsAsync();
         }
     }
 }

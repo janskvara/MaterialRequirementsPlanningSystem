@@ -29,21 +29,21 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
         [Route("/api/station")]
         public async Task CreateStation([FromBody] StationEntity request)
         {
-            await _capacityPlanningRepository.CreateStation(request);
+            await _capacityPlanningRepository.CreateStationAsync(request);
         }
 
         [HttpPost]
         [Route("/api/departure")]
         public async Task CreateDeparture([FromBody] DepartmentEntity request)
         {
-            await _capacityPlanningRepository.CreateDepartment(request);
+            await _capacityPlanningRepository.CreateDepartmentAsync(request);
         }
 
         [HttpGet]
         [Route("/api/route-sheet")]
         public async Task<RouteSheetResponseModel> GetRouteSheet([FromQuery] int routeSheetId)
         {
-            return await _capacityPlanningQuery.GetRouteSheet(routeSheetId);
+            return await _capacityPlanningQuery.GetRouteSheetAsync(routeSheetId);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using DataAcess.Entities;
-using System.Security.Cryptography;
 
 namespace BusinessLogic.CapacityPlanningService
 {

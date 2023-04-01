@@ -11,7 +11,10 @@ namespace DataAcess
         public IMongoCollection<RouteSheetEntity> RouteSheetsCollection { get; }
         public IMongoCollection<DepartmentEntity> DeparturesCollection { get; }
         public IMongoCollection<FactoryModelEntity> FactoryModelCollection { get; }
+        public IMongoCollection<ProductionSheduleReportEntity> ProductionSheduleReportCollection { get; }
+        public IMongoCollection<GoodsEntity> WarehouseCollection { get; }
     }
+
     public class MongoDBService: IMongoDBService
     {
 
@@ -20,6 +23,8 @@ namespace DataAcess
         private readonly IMongoCollection<RouteSheetEntity> _routeSheetsCollection;
         private readonly IMongoCollection<DepartmentEntity> _departureModelCollection;
         private readonly IMongoCollection<FactoryModelEntity> _factoryModelCollection;
+        private readonly IMongoCollection<ProductionSheduleReportEntity> _productionSheduleReportCollection;
+        private readonly IMongoCollection<GoodsEntity> _warehouseCollection;
 
         public MongoDBService(IOptions<MongoDBSettings> mongoDBSettings)
         {
@@ -30,6 +35,8 @@ namespace DataAcess
             _routeSheetsCollection = database.GetCollection<RouteSheetEntity>("route_sheets");
             _departureModelCollection = database.GetCollection<DepartmentEntity>("departures");
             _factoryModelCollection = database.GetCollection<FactoryModelEntity>("factory-models");
+            _productionSheduleReportCollection = database.GetCollection<ProductionSheduleReportEntity>("production-shedule-report");
+            _warehouseCollection = database.GetCollection<GoodsEntity>("warehouse");
         }
 
         public IMongoCollection<BillOfMaterialsEntity> BillOfMaterialsCollection => _billOfMaterialsCollection;
@@ -37,5 +44,7 @@ namespace DataAcess
         public IMongoCollection<RouteSheetEntity> RouteSheetsCollection => _routeSheetsCollection;
         public IMongoCollection<DepartmentEntity> DeparturesCollection => _departureModelCollection;
         public IMongoCollection<FactoryModelEntity> FactoryModelCollection => _factoryModelCollection;
+        public IMongoCollection<ProductionSheduleReportEntity> ProductionSheduleReportCollection => _productionSheduleReportCollection;
+        public IMongoCollection<GoodsEntity> WarehouseCollection => _warehouseCollection;
     }
 }

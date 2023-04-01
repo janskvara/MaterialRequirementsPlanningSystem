@@ -5,7 +5,7 @@ namespace BusinessLogic.CapacityPlanningService
 {
     public interface ICapacityPlanningQuery
     {
-        public Task<RouteSheetResponseModel> GetRouteSheet(int routeSheeId);
+        public Task<RouteSheetResponseModel> GetRouteSheetAsync(int routeSheeId);
     }
     public class CapacityPlanningQuery : ICapacityPlanningQuery
     {
@@ -15,11 +15,11 @@ namespace BusinessLogic.CapacityPlanningService
             _repository = capacityPlanningRepository;
         }
 
-        public async Task<RouteSheetResponseModel> GetRouteSheet(int routeSheeId)
+        public async Task<RouteSheetResponseModel> GetRouteSheetAsync(int routeSheeId)
         {
-            var routeSheet = await _repository.GetRouteSheet(routeSheeId);
-            var department = await _repository.GetDepartment(routeSheet.Departure);
-            var routeSheetStations = (await _repository.GetStations()).FindAll(x => routeSheet.StationList.Contains(x.Id));
+            var routeSheet = await _repository.GetRouteSheetAsync(routeSheeId);
+            var department = await _repository.GetDepartmentAsync(routeSheet.Departure);
+            var routeSheetStations = (await _repository.GetStationsAsync()).FindAll(x => routeSheet.StationList.Contains(x.Id));
             var productionCapacity = ProductionCapacityCalculator.CalculateProductionCapacityPerWeek(department, routeSheetStations);
             var order = 0;
             return new RouteSheetResponseModel
