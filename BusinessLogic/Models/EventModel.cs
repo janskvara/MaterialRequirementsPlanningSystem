@@ -58,4 +58,25 @@ namespace BusinessLogic.Models
             _event = new EventEntity(text, description, startTime, startTime, color);
         }
     }
+
+    public class ImportGoodsEventModel : EventModel
+    {
+        private readonly EventEntity _event;
+        private readonly int _orderId;
+
+        public override EventEntity Event => _event;
+        public override int OrderId => _orderId;
+
+        public ImportGoodsEventModel(int orderId, string model, DateTimeOffset deadline, List<Order> orders)
+        {
+            var color = 3;
+            _orderId = orderId;
+            var text = $"Import tovaru:{orderId}";
+            var ordersText = orders.Select(x => $" Id:{x.PartNumber} Pocet: {x.Count}, " ).ToList();
+
+            var description = GetDescription($"Import tovaru pre objednavku:{orderId}", $"Model: {model}",
+                $"Deadline importu vyrobkov na zozname: {deadline}", $"Objednavkovy list: {String.Join(" ", ordersText)}");
+            _event = new EventEntity(text, description, deadline, deadline, color);
+        }
+    }
 }

@@ -8,6 +8,7 @@ namespace DataAcess.Repositories
     {
         public Task SaveProductionSheduleReport(ProductionSheduleReportEntity report);
         public Task<Dictionary<string, ProductionSheduleReportEntity>> GetProductionSheduleReports();
+        public Task SaveWarehouseOrders(WareHouseOrderEntity wareHouseOrder);
     }
 
     public class MRPRepository: IMRPRepository
@@ -29,6 +30,11 @@ namespace DataAcess.Repositories
         public async Task SaveProductionSheduleReport(ProductionSheduleReportEntity report)
         {
            await _mongoDbService.ProductionSheduleReportCollection.InsertOneAsync(report);
+        }
+
+        public async Task SaveWarehouseOrders(WareHouseOrderEntity wareHouseOrder)
+        {
+            await _mongoDbService.WarehouseOrderCollection.InsertOneAsync(wareHouseOrder);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace DataAcess
         public IMongoCollection<FactoryModelEntity> FactoryModelCollection { get; }
         public IMongoCollection<ProductionSheduleReportEntity> ProductionSheduleReportCollection { get; }
         public IMongoCollection<GoodsEntity> WarehouseCollection { get; }
+        public IMongoCollection<WareHouseOrderEntity> WarehouseOrderCollection { get; }
     }
 
     public class MongoDBService: IMongoDBService
@@ -25,6 +26,7 @@ namespace DataAcess
         private readonly IMongoCollection<FactoryModelEntity> _factoryModelCollection;
         private readonly IMongoCollection<ProductionSheduleReportEntity> _productionSheduleReportCollection;
         private readonly IMongoCollection<GoodsEntity> _warehouseCollection;
+        private readonly IMongoCollection<WareHouseOrderEntity> _warehouseOrderCollection;
 
         public MongoDBService(IOptions<MongoDBSettings> mongoDBSettings)
         {
@@ -37,6 +39,7 @@ namespace DataAcess
             _factoryModelCollection = database.GetCollection<FactoryModelEntity>("factory-models");
             _productionSheduleReportCollection = database.GetCollection<ProductionSheduleReportEntity>("production-shedule-report");
             _warehouseCollection = database.GetCollection<GoodsEntity>("warehouse");
+            _warehouseOrderCollection = database.GetCollection<WareHouseOrderEntity>("warehouse-order");
         }
 
         public IMongoCollection<BillOfMaterialsEntity> BillOfMaterialsCollection => _billOfMaterialsCollection;
@@ -46,5 +49,6 @@ namespace DataAcess
         public IMongoCollection<FactoryModelEntity> FactoryModelCollection => _factoryModelCollection;
         public IMongoCollection<ProductionSheduleReportEntity> ProductionSheduleReportCollection => _productionSheduleReportCollection;
         public IMongoCollection<GoodsEntity> WarehouseCollection => _warehouseCollection;
+        public IMongoCollection<WareHouseOrderEntity> WarehouseOrderCollection => _warehouseOrderCollection;
     }
 }

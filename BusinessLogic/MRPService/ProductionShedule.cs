@@ -3,8 +3,6 @@ using BusinessLogic.FactoryModelsService;
 using BusinessLogic.Models;
 using DataAcess.Entities;
 using DataAcess.Repositories;
-using MongoDB.Bson.Serialization.Serializers;
-using System.Security.Cryptography.X509Certificates;
 
 namespace BusinessLogic.MRPService
 {
@@ -51,7 +49,7 @@ namespace BusinessLogic.MRPService
                 if (productionStartDate < productionPlan.FromDate)
                 {
                     logs.Add($"Kapacitne planovanie obmedzuje vykonat objednavku:{order.OrderId}. Zaciatok vyroby: {productionStartDate}" +
-                        $"by bol pred datumom zacatia planu: {productionPlan.FromDate}");
+                        $"by bol pred datumom zacatia planu: {productionPlan.FromDate}.");
                     continue;
                 }
 
@@ -65,7 +63,7 @@ namespace BusinessLogic.MRPService
             }
 
             var orderedProductionEvents = productionEvents.OrderBy(x => x.Event.StartTime).ToList();
-            //var changesInWareHouse = new ChangesInWarehouseModel
+            var changesInWareHouse = new ChangesInWarehouseModel();
             var orders = new List<OrderGoodsEntities>();
             foreach(var productionEvent in orderedProductionEvents)
             {
@@ -79,19 +77,49 @@ namespace BusinessLogic.MRPService
                     Description= s.Description,
                     Unit= s.Unit
                 }).ToList();
-                var goods = (await _warehouseRepository.GetAllGoodsInProductionWarehouse())
+                var goodsList = (await _warehouseRepository.GetAllGoodsInProductionWarehouse())
                     .FindAll(s => wholeBill.Any(x => x.PartNumber.Equals(s.PartNumber)));
+
+                //inicializacia zmien vo warehouse -> zaciname aktualnym stavov na sklade
+                foreach(var goods in goodsList)
+                {
+                    changesInWareHouse.AddGoodsChange(goods.PartNumber, productionPlan.FromDate, 0, goods.ActualCapacity);
+                }
 
                 var orderGoodsEntity = new OrderGoodsEntities(productionEvent.Event.StartTime.AddDays(-1));
                 foreach(var component in wholeBill)
                 {
-                    var componentInWarehouse = goods.First(x => x.PartNumber.Equals(component.PartNumber));
-                    var newCapacity = componentInWarehouse.ActualCapacity - component.Quantity;
+                    var componentInWarehouse = goodsList.First(x => x.PartNumber.Equals(component.PartNumber));
+                    var lastChangeOfTheComponent = changesInWareHouse.ChangesOfProducts[component.PartNumber].Last();
+                    var newCapacity = lastChangeOfTheComponent.NewCapacity - component.Quantity;
+
+                    //ak by nebolo dostatok vyrobkov po vyrobe -> znamena ze este pred vyrobov potrebujeme vytovrit objednavku
+                    //treba porozmyslat co s maxCapacity ak sa prekroci pre danu objednavku mu sa objednavka rozdelit na viac objednavok
                     if(newCapacity < componentInWarehouse.MinimumThresholdCapacity)
                     {
                         var count = componentInWarehouse.MinimumThresholdCapacity - newCapacity;
                         orderGoodsEntity.Orders.Add(new Order(component.PartNumber, count));
+                        var updatedCapacity = componentInWarehouse.ActualCapacity + count;
+                        changesInWareHouse.AddGoodsChange(component.PartNumber, orderGoodsEntity.ImportDate,
+                            count, updatedCapacity);
                     }
+
+                    lastChangeOfTheComponent = changesInWareHouse.ChangesOfProducts[component.PartNumber].Last();
+                    var capacityAfterProductionOrder = lastChangeOfTheComponent.NewCapacity - component.Quantity;
+                    changesInWareHouse.AddGoodsChange(component.PartNumber, productionEvent.Event.EndTime, 
+                        component.Quantity, capacityAfterProductionOrder);
+                }
+
+                if (orderGoodsEntity.Orders.Any())
+                {
+                    await _mrpRepository.SaveWarehouseOrders(new WareHouseOrderEntity(productionPlan.ReportId, productionEvent.OrderId, orderGoodsEntity));
+                    var orderEvent = new ImportGoodsEventModel(order.OrderId, model.Id, orderGoodsEntity.ImportDate, orderGoodsEntity.Orders);
+                    events.Add(orderEvent.Event);
+                    logs.Add($"Bude nutne doobjednat tovar pre:{order.OrderId}. Deadline: {orderGoodsEntity.ImportDate}. Podrobnosti v danom evente.");
+                }
+                else
+                {
+                    logs.Add($"Nie je potrebne doobjednavat ziaden tovar pre objednavku:{order.OrderId}.");
                 }
             }
 

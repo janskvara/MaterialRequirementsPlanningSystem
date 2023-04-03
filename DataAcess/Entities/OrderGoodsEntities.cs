@@ -2,7 +2,7 @@
 {
     public class OrderGoodsEntities
     {
-        public DateTimeOffset ImportDate { get; }
+        public DateTimeOffset ImportDate { get; set; }
         public List<Order> Orders { get; set; } = new();
 
         public OrderGoodsEntities(DateTimeOffset importDate)
@@ -13,8 +13,8 @@
 
     public class Order
     {
-        public string PartNumber { get; }
-        public double Count { get; }
+        public string PartNumber { get; set; }
+        public double Count { get; set; }
 
         public Order(string partNumber, double count)
         {
