@@ -1,4 +1,4 @@
-﻿using BusinessLogic.CapacityPlanningService;
+﻿using BusinessLogic.DepartmentService;
 using BusinessLogic.Models;
 using DataAcess.Entities;
 using DataAcess.Repositories;
@@ -8,14 +8,16 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
 {
     public class CapacityPlanningController : ControllerBase
     {
-        private readonly ICapacityPlanningRepository _capacityPlanningRepository;
+        private readonly IDepartmentRepository _capacityPlanningRepository;
         private readonly ICapacityPlanningQuery _capacityPlanningQuery;
+        private readonly IDepartmentQuery _departmentQuery;
 
-        public CapacityPlanningController(ICapacityPlanningRepository capacityPlanningRepository, 
-            ICapacityPlanningQuery capacityPlanningQuery)
+        public CapacityPlanningController(IDepartmentRepository capacityPlanningRepository, 
+            ICapacityPlanningQuery capacityPlanningQuery, IDepartmentQuery departmentQuery)
         {
             _capacityPlanningRepository = capacityPlanningRepository;
-            _capacityPlanningQuery= capacityPlanningQuery;
+            _capacityPlanningQuery = capacityPlanningQuery;
+            _departmentQuery = departmentQuery;
         }
 
         [HttpPost]
@@ -34,9 +36,9 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
 
         [HttpPost]
         [Route("/api/departure")]
-        public async Task CreateDeparture([FromBody] DepartmentEntity request)
+        public async Task CreateDeparture([FromBody] DepartmentModel request)
         {
-            await _capacityPlanningRepository.CreateDepartmentAsync(request);
+            await _departmentQuery.AddNewDepartment(request);
         }
 
         [HttpGet]

@@ -4,20 +4,20 @@ using MongoDB.Driver;
 
 namespace DataAcess.Repositories
 {
-    public interface ICapacityPlanningRepository
+    public interface IDepartmentRepository
     {
         public Task CreateStationAsync(StationEntity newStation);
         public Task<List<StationEntity>> GetStationsAsync();
         public Task CreateRouteSheet(RouteSheetEntity newRouteSheet);
         public Task<RouteSheetEntity> GetRouteSheetAsync(int routeSheetId);
-        public Task CreateDepartmentAsync(DepartmentEntity newDeparture);
+        public Task AddNewDepartmentAsync(DepartmentEntity newDeparture);
         public Task<DepartmentEntity> GetDepartmentAsync(int departureId);
     }
 
-    public class CapacityPlanningRepository: ICapacityPlanningRepository
+    public class DepartmentRepository: IDepartmentRepository
     {
         private readonly IMongoDBService _mongoDBService;
-        public CapacityPlanningRepository(IMongoDBService mongoDBService)
+        public DepartmentRepository(IMongoDBService mongoDBService)
         {
             _mongoDBService = mongoDBService;
         }
@@ -37,7 +37,7 @@ namespace DataAcess.Repositories
            await _mongoDBService.RouteSheetsCollection.InsertOneAsync(newRouteSheet);
         }
 
-        public async Task CreateDepartmentAsync(DepartmentEntity newDeparture)
+        public async Task AddNewDepartmentAsync(DepartmentEntity newDeparture)
         {
             await _mongoDBService.DeparturesCollection.InsertOneAsync(newDeparture);
         }

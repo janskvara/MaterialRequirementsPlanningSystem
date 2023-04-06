@@ -12,7 +12,7 @@
 
         public string PlanReportId { get; set; }
         public int OrderId { get; set; }
-        public DateTimeOffset ImportDate { get; set; }
+        public DateTime ImportDate { get; set; }
         public List<Order> ImportOrders { get; set; } = new(); 
     }
 }

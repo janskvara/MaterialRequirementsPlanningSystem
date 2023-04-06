@@ -1,4 +1,4 @@
-﻿using BusinessLogic.CapacityPlanningService;
+﻿using BusinessLogic.DepartmentService;
 using BusinessLogic.Models;
 using DataAcess.Entities;
 using DataAcess.Repositories;
@@ -76,11 +76,11 @@ namespace BusinessLogic.FactoryModelsService
             return response;
         }
 
-        private List<SummarryMaterialOfBill> GetSummarryMaterialsOfBillAsync(List<MaterialOfBill> billOfMaterials)
+        private List<ProductRequirementModel> GetSummarryMaterialsOfBillAsync(List<MaterialOfBill> billOfMaterials)
         {
             var combinedElements = billOfMaterials.GroupBy(x => x.PartNumber);
             //ak budu aj subkomponenty treba popremyslat nad nejakym typom rekurzie
-            var summaryMaterialsOfBills = combinedElements.Select(x => new SummarryMaterialOfBill()
+            var summaryMaterialsOfBills = combinedElements.Select(x => new ProductRequirementModel()
             {
                 PartNumber = x.First().PartNumber,
                 Description = x.First().Description,

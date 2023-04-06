@@ -13,6 +13,8 @@ namespace DataAcess.Entities
 
         public List<EventEntity> Events { get; set; } = new();
 
+        public List<ShiftSummaryEntity> ShiftSummaries { get; set; } = new();
+
         public List<string> Description { get; set; } = new();
     }
 }

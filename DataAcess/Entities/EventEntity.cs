@@ -4,11 +4,11 @@
     {
         public string Text { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public DateTimeOffset StartTime { get; set; }
-        public DateTimeOffset EndTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public int Color { get; set; }
 
-        public EventEntity(string text, string description, DateTimeOffset startTime, DateTimeOffset endTime, int color) 
+        public EventEntity(string text, string description, DateTime startTime, DateTime endTime, int color) 
         {
             Text= text;
             Description= description;

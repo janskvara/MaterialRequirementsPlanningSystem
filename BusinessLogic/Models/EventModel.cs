@@ -29,13 +29,14 @@ namespace BusinessLogic.Models
         public override EventEntity Event => _event;
         public override int OrderId => _orderId;
 
-        public ManufacturesEventModel(int orderId, string model, DateTimeOffset startTime, DateTimeOffset endTime)
+        public ManufacturesEventModel(int orderId, string model, double quantity, DateTime startTime, DateTime endTime)
         {
             var color = 1;
             _orderId = orderId;
             var text = $"Vyroba objednavky:{orderId}";
             var description = GetDescription($"Vyroba objednavky:{orderId}", $"Model: {model}",
-                $"Zaciatok vyroby: {startTime}", $"Predpokladane ukoncenie vyroby: {endTime}");
+                $"Zaciatok vyroby: {startTime}", $"Predpokladane ukoncenie vyroby: {endTime}",
+                $"Celkovy pocet vyrobenych kusov: {quantity}");
             _event = new EventEntity(text, description, startTime, endTime, color);
         }
     }
@@ -48,7 +49,7 @@ namespace BusinessLogic.Models
         public override EventEntity Event => _event;
         public override int OrderId => _orderId;
 
-        public ExportEventModel(int orderId, string model, DateTimeOffset startTime)
+        public ExportEventModel(int orderId, string model, DateTime startTime)
         {
             var color = 2;
             _orderId = orderId;
@@ -67,7 +68,7 @@ namespace BusinessLogic.Models
         public override EventEntity Event => _event;
         public override int OrderId => _orderId;
 
-        public ImportGoodsEventModel(int orderId, string model, DateTimeOffset deadline, List<Order> orders)
+        public ImportGoodsEventModel(int orderId, string model, DateTime deadline, List<Order> orders)
         {
             var color = 3;
             _orderId = orderId;
@@ -77,6 +78,25 @@ namespace BusinessLogic.Models
             var description = GetDescription($"Import tovaru pre objednavku:{orderId}", $"Model: {model}",
                 $"Deadline importu vyrobkov na zozname: {deadline}", $"Objednavkovy list: {String.Join(" ", ordersText)}");
             _event = new EventEntity(text, description, deadline, deadline, color);
+        }
+    }
+
+    public class ShiftEvent : EventModel
+    {
+        private readonly EventEntity _event;
+        private readonly int _orderId;
+
+        public override EventEntity Event => _event;
+        public override int OrderId => _orderId;
+
+        public ShiftEvent(int orderId, string model, DateTime startTime, DateTime endTime)
+        {
+            var color = 4;
+            _orderId = orderId;
+            var text = $"Zmena:{startTime} - {endTime}";
+            var description = GetDescription($"Zmena:{startTime} - {endTime}", $"Praca na objednavke: {orderId}",
+                 $"Model: {model}");
+            _event = new EventEntity(text, description, startTime, endTime, color);
         }
     }
 }

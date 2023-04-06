@@ -1,7 +1,7 @@
 ﻿using BusinessLogic.Models;
 using DataAcess.Repositories;
 
-namespace BusinessLogic.CapacityPlanningService
+namespace BusinessLogic.DepartmentService
 {
     public interface ICapacityPlanningQuery
     {
@@ -9,8 +9,8 @@ namespace BusinessLogic.CapacityPlanningService
     }
     public class CapacityPlanningQuery : ICapacityPlanningQuery
     {
-        private readonly ICapacityPlanningRepository _repository;
-        public CapacityPlanningQuery(ICapacityPlanningRepository capacityPlanningRepository)
+        private readonly IDepartmentRepository _repository;
+        public CapacityPlanningQuery(IDepartmentRepository capacityPlanningRepository)
         {
             _repository = capacityPlanningRepository;
         }
@@ -20,21 +20,14 @@ namespace BusinessLogic.CapacityPlanningService
             var routeSheet = await _repository.GetRouteSheetAsync(routeSheeId);
             var department = await _repository.GetDepartmentAsync(routeSheet.Departure);
             var routeSheetStations = (await _repository.GetStationsAsync()).FindAll(x => routeSheet.StationList.Contains(x.Id));
-            var productionCapacity = ProductionCapacityCalculator.CalculateProductionCapacityPerWeek(department, routeSheetStations);
+           // var productionCapacity = ProductionCapacityCalculator.CalculateProductionCapacityPerWeek(department, routeSheet.StationList);
             var order = 0;
             return new RouteSheetResponseModel
             {
                 Id = routeSheet.Id,
                 Name = routeSheet.Name,
-                ProductionCapacityPerWeek = productionCapacity,
-                Department = new DepartmentModel
-                {
-                    Id = department.Id,
-                    Name = department.Name,
-                    ShiftDurationInHours = department.ShiftDurationInHours,
-                    WorkDaysPerWeek = department.WorkDaysPerWeek,
-                    TypeOfProduction = department.TypeOfProduction.ToString(),
-                },
+                Department= department,
+               // ProductionCapacityPerWeek = productionCapacity,
                 StationList = routeSheetStations.Select(x => new StationModel()
                 {
                     Order = ++order,

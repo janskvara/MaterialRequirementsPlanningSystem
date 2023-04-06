@@ -8,8 +8,24 @@ namespace DataAcess.Entities
         [BsonId]
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int ShiftDurationInHours { get; set; }
-        public int WorkDaysPerWeek { get; set; }
+        public List<Shift> ShiftsPerDay { get; set; } = new();
+        public List<DayOfWeek> WorkDaysOfWeek { get; set; } = new();
         public TypeOfProduction TypeOfProduction { get; set; }
+    }
+
+    public class Shift
+    {
+        public Shift(DateTime startTime, DateTime finishTime)
+        {
+            StartTime = startTime.TimeOfDay;
+            EndTime = finishTime.TimeOfDay;
+            ShiftDurationInSeconds = (EndTime - StartTime).TotalSeconds;
+            ShiftDurationInMinutes = (EndTime - StartTime).TotalMinutes;
+        }
+
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
+        public double ShiftDurationInSeconds { get; set; }
+        public double ShiftDurationInMinutes { get; set; }
     }
 }

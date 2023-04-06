@@ -2,10 +2,10 @@
 {
     public class OrderGoodsEntities
     {
-        public DateTimeOffset ImportDate { get; set; }
+        public DateTime ImportDate { get; set; }
         public List<Order> Orders { get; set; } = new();
 
-        public OrderGoodsEntities(DateTimeOffset importDate)
+        public OrderGoodsEntities(DateTime importDate)
         {
             ImportDate= importDate;
         }

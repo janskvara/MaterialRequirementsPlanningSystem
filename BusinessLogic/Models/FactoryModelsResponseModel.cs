@@ -7,7 +7,7 @@
         public string ModelType { get; set; } = string.Empty;
         public RouteSheetResponseModel RouteSheet { get; set; } = new();
         public List<MaterialOfBillModel> MaterialList { get; set; } = new();
-        public List<SummarryMaterialOfBill> SummarryMaterialList { get; set; } = new();
+        public List<ProductRequirementModel> SummarryMaterialList { get; set; } = new();
     }
 
     public class FactoryModelsResponseModel
