@@ -6,17 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiMaterialRequirementsPlanningSystem.Controllers
 {
-    public class CapacityPlanningController : ControllerBase
+    public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentRepository _capacityPlanningRepository;
-        private readonly ICapacityPlanningQuery _capacityPlanningQuery;
         private readonly IDepartmentQuery _departmentQuery;
 
-        public CapacityPlanningController(IDepartmentRepository capacityPlanningRepository, 
-            ICapacityPlanningQuery capacityPlanningQuery, IDepartmentQuery departmentQuery)
+        public DepartmentController(IDepartmentRepository capacityPlanningRepository,  IDepartmentQuery departmentQuery)
         {
             _capacityPlanningRepository = capacityPlanningRepository;
-            _capacityPlanningQuery = capacityPlanningQuery;
             _departmentQuery = departmentQuery;
         }
 
@@ -35,17 +32,17 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
         }
 
         [HttpPost]
-        [Route("/api/departure")]
+        [Route("/api/department")]
         public async Task CreateDeparture([FromBody] DepartmentModel request)
         {
             await _departmentQuery.AddNewDepartment(request);
         }
 
         [HttpGet]
-        [Route("/api/route-sheet")]
-        public async Task<RouteSheetResponseModel> GetRouteSheet([FromQuery] int routeSheetId)
+        [Route("/api/department")]
+        public async Task<SummaryDepartmentModel> GetSummaryDeparture()
         {
-            return await _capacityPlanningQuery.GetRouteSheetAsync(routeSheetId);
+            return await _departmentQuery.GetSummaryDepartment();
         }
     }
 }

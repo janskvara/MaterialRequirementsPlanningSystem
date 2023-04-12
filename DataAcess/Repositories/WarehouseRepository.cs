@@ -7,7 +7,6 @@ namespace DataAcess.Repositories
     public interface IWarehouseRepository
     {
         public Task AddGoodsToProductionWarehouse(GoodsEntity goods);
-        public Task UpdateActualCapacity(double actualCapacity, string productName);
         public Task<List<GoodsEntity>> GetAllGoodsInProductionWarehouse();
     }
 
@@ -27,13 +26,6 @@ namespace DataAcess.Repositories
         public async Task<List<GoodsEntity>> GetAllGoodsInProductionWarehouse()
         {
             return await _mongoDBService.WarehouseCollection.Find(new BsonDocument()).ToListAsync();
-        }
-
-        public async Task UpdateActualCapacity(double actualCapacity, string productName)
-        {
-            var filter = Builders<GoodsEntity>.Filter.Eq("productName", productName);
-            var update = Builders<GoodsEntity>.Update.Set("actualCapacity", actualCapacity);
-            await _mongoDBService.WarehouseCollection.UpdateOneAsync(filter, update);
         }
     }
 }

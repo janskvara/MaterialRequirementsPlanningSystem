@@ -2,7 +2,7 @@
 {
     public class StationModel
     {
-        public int Order { get; set; } 
+        public int Sequence { get; set; } 
         public int Id { get; set; }
         public string Description { get; set; } = string.Empty;
         public string Instrument { get; set; } = string.Empty;

@@ -7,7 +7,7 @@ namespace DataAcess.Entities
         [BsonId]
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int Departure { get; set; }
+        public int Department { get; set; }
         public List<int> StationList { get; set; } = new List<int>();
     }
 }

@@ -1,6 +1,5 @@
 ﻿using BusinessLogic.Models;
 using BusinessLogic.MRPService;
-using DataAcess.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiMaterialRequirementsPlanningSystem.Controllers
@@ -8,11 +7,9 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
     public class MRPController: ControllerBase
     {
         private readonly IProductionShedule _productionShedule;
-        private readonly IMRPRepository _mrpRepository;
-        public MRPController(IProductionShedule productionShedule, IMRPRepository mrpRepository)
+        public MRPController(IProductionShedule productionShedule)
         {
             _productionShedule= productionShedule;
-            _mrpRepository= mrpRepository;
         }
 
         [HttpPost]
@@ -27,16 +24,6 @@ namespace ApiMaterialRequirementsPlanningSystem.Controllers
         public async Task<ProductionSheduleReportsModel> GetProductionScheduleReports()
         {
             return await _productionShedule.GetReports();
-        }
-
-        [HttpGet]
-        [Route("/api/shift-summaries")]
-        public async Task<ShiftSummaryResponseModel> GetShiftSummaries()
-        {
-            return new ShiftSummaryResponseModel
-            {
-                ShiftsSummary = await _mrpRepository.GetShiftSummaries()
-            };
         }
     }
 }

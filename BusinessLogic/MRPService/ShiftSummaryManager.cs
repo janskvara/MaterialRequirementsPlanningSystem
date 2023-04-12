@@ -15,10 +15,10 @@ namespace BusinessLogic.MRPService
             _reportId = reportId;
         }
 
-        internal void AddShift(FactoryModelResponse model, OrderPlanEntity order, double quantity, 
+        internal void AddShift(ProductInformationModel model, OrderPlanEntity order, double quantity, 
             DateTime shiftStart, DateTime shiftEnd)
         {
-            var shiftBillOfMaterials = model.SummarryMaterialList.Select(x => new ProductRequirement
+            var shiftBillOfMaterials = model.SummaryBillOfMaterials.Select(x => new ProductRequirement
             {
                 PartNumber = x.PartNumber,
                 Quantity = x.Quantity * quantity
@@ -31,7 +31,7 @@ namespace BusinessLogic.MRPService
                 Quantity = quantity,
                 ShiftStart = shiftStart,
                 ShiftEnd = shiftEnd,
-                NameOfManufacturedModel = model.Name,
+                NameOfManufacturedModel = model.PartNumber,
                 BillOfMaterials= shiftBillOfMaterials
             };
             ShiftSummaries.Add(summaryShift);

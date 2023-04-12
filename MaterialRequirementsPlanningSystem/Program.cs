@@ -1,9 +1,8 @@
+using BusinessLogic.ComponentInformationService;
 using BusinessLogic.DepartmentService;
-using BusinessLogic.FactoryModelsService;
 using BusinessLogic.MRPService;
 using DataAcess;
 using DataAcess.Repositories;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,15 +19,15 @@ builder.Services.AddCors();
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"))
                 .AddSingleton<IMongoDBService, MongoDBService>()
                 .AddSingleton<IDepartmentRepository, DepartmentRepository>()
-                .AddSingleton<IFactoryModelRepository, FactoryModelRepository>()
                 .AddSingleton<IWarehouseRepository, WarehouseRepository>()
-                .AddSingleton<IMRPRepository, MRPRepository>();
+                .AddSingleton<IMRPRepository, MRPRepository>()
+                .AddSingleton<IComponentInformationRepository, ComponentInformationRepository>();
 
 //BusinessLogic
-builder.Services.AddSingleton<ICapacityPlanningQuery, CapacityPlanningQuery>()
-                .AddSingleton<IFactoryModelQuery, FactoryModelQuery>()
+builder.Services.AddSingleton<IRouteSheetQuery, RouteSheetQuery>()
                 .AddSingleton<IProductionShedule, ProductionShedule>()
-                .AddSingleton<IDepartmentQuery, DepartmentQuery>();
+                .AddSingleton<IDepartmentQuery, DepartmentQuery>()
+                .AddSingleton<IProductInformationQuery, ProductInformationQuery>();
 
 
 builder.Services.AddEndpointsApiExplorer();

@@ -1,5 +1,5 @@
-﻿using BusinessLogic.DepartmentService;
-using BusinessLogic.FactoryModelsService;
+﻿using BusinessLogic.ComponentInformationService;
+using BusinessLogic.DepartmentService;
 using BusinessLogic.Models;
 using DataAcess.Entities;
 using DataAcess.Repositories;
@@ -15,15 +15,17 @@ namespace BusinessLogic.MRPService
 
     public class ProductionShedule: IProductionShedule
     {
-        private readonly IFactoryModelQuery _factoryModelQuery;
         private readonly IMRPRepository _mrpRepository;
         private readonly IWarehouseRepository _warehouseRepository;
-
-        public ProductionShedule(IFactoryModelQuery factoryModelQuery, IMRPRepository mrpRepository, IWarehouseRepository warehouseRepository)
+        private readonly IProductInformationQuery _productInformationQuery;
+        private readonly IDepartmentQuery _departmentQuery;
+        public ProductionShedule(IProductInformationQuery productInformationQuery, IMRPRepository mrpRepository, 
+            IWarehouseRepository warehouseRepository, IDepartmentQuery departmentQuery)
         {
-            _factoryModelQuery= factoryModelQuery;
+            _productInformationQuery = productInformationQuery;
             _mrpRepository= mrpRepository;
             _warehouseRepository= warehouseRepository;
+            _departmentQuery= departmentQuery;
         }
 
         public async Task Plan(OrderPlanRequest productionPlan)
@@ -36,8 +38,8 @@ namespace BusinessLogic.MRPService
             var orderedOrders = productionPlan.Orders.OrderBy(x => x.ExportDate).Reverse().ToList();
             foreach (var order in orderedOrders)
             {
-                var model = await _factoryModelQuery.GetFactoryModelAsync(order.ModelId);
-                var department = model.RouteSheet.Department;
+                var model = await _productInformationQuery.GetProductInformation(order.ModelId);
+                var department = await _departmentQuery.GetDepartment(model.RouteSheet.Department);
                 var shiftsFromLatest = department.ShiftsPerDay.OrderBy(x => x.EndTime).Reverse().ToList();
 
                 DateTime orderFinishDate = GetAviableDate(department.WorkDaysOfWeek, order.ExportDate.AddDays(-1));
@@ -52,7 +54,6 @@ namespace BusinessLogic.MRPService
                     var endTime = CombineDateTimeWithDateWithTimeSpan(shiftDate, shiftsFromLatest.First().EndTime);
                     shift = new ShiftModel(startTime, endTime);
                 }
-
 
                 var orderIsFinish = false;
                 while (!orderIsFinish)
@@ -93,9 +94,9 @@ namespace BusinessLogic.MRPService
                 {
                     var shifts = shiftSummaryManager.GetShifts(order.OrderId).OrderBy(x => x.ShiftStart);
                     var totalQuantity = shifts.Sum(x => x.Quantity);
-                    var productionEvent = new ManufacturesEventModel(order.OrderId, model.Name, totalQuantity, shifts.First().ShiftStart, shifts.Last().ShiftEnd);
+                    var productionEvent = new ManufacturesEventModel(order.OrderId, model.PartNumber, totalQuantity, shifts.First().ShiftStart, shifts.Last().ShiftEnd);
                     productionEvents.Add(productionEvent);
-                    events.Add(new ExportEventModel(order.OrderId, model.Name, order.ExportDate).Event);
+                    events.Add(new ExportEventModel(order.OrderId, model.PartNumber, order.ExportDate).Event);
                     events.Add(productionEvent.Event);
                 }
                 else
@@ -108,14 +109,14 @@ namespace BusinessLogic.MRPService
 
 
             var orderedProductionEvents = productionEvents.OrderBy(x => x.Event.StartTime).ToList();
-            var changesInWareHouse = new ChangesInWarehouseModel();
+            var changesInWareHouse = new WarehouseSimulation();
             var orders = new List<OrderGoodsEntities>();
             foreach (var productionEvent in orderedProductionEvents)
             {
                 var order = productionPlan.Orders.First(x => x.OrderId == productionEvent.OrderId);
-                var model = await _factoryModelQuery.GetFactoryModelAsync(order.ModelId);
+                var model = await _productInformationQuery.GetProductInformation(order.ModelId);
 
-                var wholeBill = model.SummarryMaterialList.Select(s => new ProductRequirementModel
+                var wholeBill = model.SummaryBillOfMaterials.Select(s => new ProductRequirementModel
                 {
                     PartNumber = s.PartNumber,
                     Quantity = s.Quantity * order.Quantity,
@@ -159,7 +160,7 @@ namespace BusinessLogic.MRPService
                 if (orderGoodsEntity.Orders.Any())
                 {
                     await _mrpRepository.SaveWarehouseOrders(new WareHouseOrderEntity(productionPlan.ReportId, productionEvent.OrderId, orderGoodsEntity));
-                    var orderEvent = new ImportGoodsEventModel(order.OrderId, model.Id, orderGoodsEntity.ImportDate, orderGoodsEntity.Orders);
+                    var orderEvent = new ImportGoodsEventModel(order.OrderId, model.PartNumber, orderGoodsEntity.ImportDate, orderGoodsEntity.Orders);
                     events.Add(orderEvent.Event);
                     logs.Add($"Bude nutne doobjednat tovar pre:{order.OrderId}. Deadline: {orderGoodsEntity.ImportDate}. Podrobnosti v danom evente.");
                 }

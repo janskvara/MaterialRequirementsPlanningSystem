@@ -10,4 +10,9 @@ namespace BusinessLogic.Models
         public double Quantity { get; set; }
         public string Unit { get; set; } = string.Empty;
     }
+
+    public class ProductRequirementWithSequenceModel: ProductRequirementModel
+    {
+        public int Sequence { get; set; }
+    }
 }

@@ -13,6 +13,11 @@ namespace BusinessLogic.DepartmentService
             return productionCapacityPerDay * department.WorkDaysOfWeek.Count();
         }
 
+        public static int CalculateProductionCapacityPerWorkDay(DepartmentEntity department, List<StationModel> stationEntities)
+        {
+            return department.ShiftsPerDay.Sum(x => CalculateProductionCapacityPerShift(x, stationEntities, department.TypeOfProduction));
+        }
+
         public static int CalculateProductionCapacityPerShift(Shift shift, List<StationModel> stationEntities, TypeOfProduction productionType)
         {
             return (int)Math.Ceiling(CalculateProductionCapacityPerMinute(productionType, stationEntities) * shift.ShiftDurationInMinutes);
