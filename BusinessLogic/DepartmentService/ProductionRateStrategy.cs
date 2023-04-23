@@ -4,12 +4,12 @@ namespace BusinessLogic.DepartmentService
 { 
     public interface IStrategy
     {
-        internal double Calculate(List<StationModel> stationEntities);
+        internal double CalculateCycleTime(List<StationModel> stationEntities);
     }
 
     public class ProductionRateStrategy : IStrategy
     {
-        public double Calculate(List<StationModel> stationEntities)
+        public double CalculateCycleTime(List<StationModel> stationEntities)
         {
             return 0;
         }
@@ -17,11 +17,11 @@ namespace BusinessLogic.DepartmentService
 
     public class ProductionRateOfFlowLineMassProductionStrategy : IStrategy
     {
-        public double Calculate(List<StationModel> stationEntities)
+        public double CalculateCycleTime(List<StationModel> stationEntities)
         {
             var maxOperationTimeInSecond = stationEntities.Max(r => r.OperationTimeInSecond);
             var maxTransferTimeInSecond = stationEntities.Max(r => r.TransferTimeInSecond);
-            return 1/((maxOperationTimeInSecond + maxTransferTimeInSecond)*(double)stationEntities.Count);
+            return 1/((double)maxOperationTimeInSecond + maxTransferTimeInSecond);
         }
     }
 }

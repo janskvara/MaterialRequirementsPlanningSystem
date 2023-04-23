@@ -20,12 +20,12 @@ namespace BusinessLogic.DepartmentService
 
         public static int CalculateProductionCapacityPerShift(Shift shift, List<StationModel> stationEntities, TypeOfProduction productionType)
         {
-            return (int)Math.Ceiling(CalculateProductionCapacityPerMinute(productionType, stationEntities) * shift.ShiftDurationInMinutes);
+            return (int)Math.Floor(CalculateProductionCapacityPerMinute(productionType, stationEntities) * shift.ShiftDurationInMinutes);
         }
 
         public static int CalculateProductionCapacityPerShift(ShiftModel shift, List<StationModel> stationEntities, TypeOfProduction productionType)
         {
-            return (int)Math.Ceiling(CalculateProductionCapacityPerMinute(productionType, stationEntities) * shift.ShiftDurationInMinutes);
+            return (int)Math.Floor(CalculateProductionCapacityPerMinute(productionType, stationEntities) * shift.ShiftDurationInMinutes);
         }
 
         public static double CalculateProductionCapacityPerMinute(TypeOfProduction productionType, List<StationModel> stationEntities)
@@ -37,9 +37,9 @@ namespace BusinessLogic.DepartmentService
                 case TypeOfProduction.SimultaneousBatchProduction:
                 case TypeOfProduction.QuantityMassProduction:
                 case TypeOfProduction.JobShopWithProductionQuantityOne:
-                    return new ProductionRateStrategy().Calculate(stationEntities);
+                    return new ProductionRateStrategy().CalculateCycleTime(stationEntities);
                 case TypeOfProduction.FlowLineMassProduction:
-                    var productionRatePerSecond = new ProductionRateOfFlowLineMassProductionStrategy().Calculate(stationEntities);
+                    var productionRatePerSecond = new ProductionRateOfFlowLineMassProductionStrategy().CalculateCycleTime(stationEntities);
                     return productionRatePerSecond * 60;
             }
             return 0;  
@@ -48,7 +48,7 @@ namespace BusinessLogic.DepartmentService
         public static double CalculateMinutesToFinishProduction(TypeOfProduction productionType, List<StationModel> stationEntities, int quantity)
         {
             var productionCapacityPerMinute = CalculateProductionCapacityPerMinute(productionType, stationEntities);
-            return Math.Floor(quantity / productionCapacityPerMinute);
+            return Math.Ceiling(quantity / productionCapacityPerMinute);
         }
     }
 }
