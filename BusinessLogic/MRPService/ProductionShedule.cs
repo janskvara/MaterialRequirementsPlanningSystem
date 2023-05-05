@@ -111,6 +111,13 @@ namespace BusinessLogic.MRPService
             var orderedProductionEvents = productionEvents.OrderBy(x => x.Event.StartTime).ToList();
             var changesInWareHouse = new WarehouseSimulation();
             var orders = new List<OrderGoodsEntities>();
+            var goodsList = await _warehouseRepository.GetAllGoodsInProductionWarehouse();
+
+            //inicializacia zmien vo warehouse -> zaciname aktualnym stavov na sklade
+            foreach (var goods in goodsList)
+            {
+                changesInWareHouse.AddGoodsChange(goods.PartNumber, productionPlan.FromDate, 0, goods.ActualCapacity);
+            }
             foreach (var productionEvent in orderedProductionEvents)
             {
                 var order = productionPlan.Orders.First(x => x.OrderId == productionEvent.OrderId);
@@ -124,14 +131,7 @@ namespace BusinessLogic.MRPService
                     Description = s.Description,
                     Unit = s.Unit
                 }).ToList();
-                var goodsList = (await _warehouseRepository.GetAllGoodsInProductionWarehouse())
-                    .FindAll(s => wholeBill.Any(x => x.PartNumber.Equals(s.PartNumber)));
-
-                //inicializacia zmien vo warehouse -> zaciname aktualnym stavov na sklade
-                foreach (var goods in goodsList)
-                {
-                    changesInWareHouse.AddGoodsChange(goods.PartNumber, productionPlan.FromDate, 0, goods.ActualCapacity);
-                }
+          
 
                 var orderGoodsEntity = new OrderGoodsEntities(productionEvent.Event.StartTime.AddDays(-1));
                 foreach (var component in wholeBill)
